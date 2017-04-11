@@ -22,7 +22,7 @@ from PyQt4.QtGui import QSizePolicy
 from PyQt4.QtCore import QSize
 
 from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as Canvas
-from matplotlib.backends.backend_qt4agg import NavigationToolbar2QTAgg as NavigationToolbar
+from matplotlib.backends.backend_qt4agg import NavigationToolbar2QT as NavigationToolbar
 from matplotlib.figure import Figure
 
 from matplotlib import rcParams
