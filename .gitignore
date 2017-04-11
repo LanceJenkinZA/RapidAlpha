@@ -1,3 +1,6 @@
 *.pyc
 *.eps
 
+/venv
+/dist
+/build
