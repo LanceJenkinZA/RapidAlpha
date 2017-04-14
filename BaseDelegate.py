@@ -22,8 +22,8 @@ from SignalGenerator import SignalGenerator
 __author__ = "Lance Jenkin"
 __email__ = "lancejenkin@gmail.com"
 
-class BaseDelegate(object):
 
+class BaseDelegate(object):
     def __init__(self):
         """ Constructor for BaseDelegate """
         self.logger = logging.getLogger("Alpha")
@@ -45,8 +45,8 @@ class BaseDelegate(object):
         # Merge config settings and signal settings to create measurement
         # settings
         self.measurement_settings = dict(self.config_settings.items() +
-                                        self.signal_settings.items() +
-                                        self.analysis_settings.items())
+                                         self.signal_settings.items() +
+                                         self.analysis_settings.items())
 
         self._getAudioDevices()
 
@@ -119,11 +119,10 @@ class BaseDelegate(object):
 
         measurement_db.saveMeasurementAttributes(measurement_attr)
 
-        assert(len(microphone_signals) == len(generator_signals))
+        assert (len(microphone_signals) == len(generator_signals))
 
         for signal_index in range(len(microphone_signals)):
-            measurement_db.saveSignal(microphone_signals[signal_index],
-                                 generator_signals[signal_index])
+            measurement_db.saveSignal(microphone_signals[signal_index], generator_signals[signal_index])
 
     def loadFrequencyResponse(self, measurement_filename):
         """ Loads the frequency response measurement at the specified measurement_filename.
@@ -151,6 +150,7 @@ class BaseDelegate(object):
         frequency_response = FrequencyResponse(microphone_signals, generator_signals, measurment_settings)
 
         return frequency_response
+
     def loadAbsorptionCoefficient(self, measurement_filename):
         """ Loads a measurement located by the specified measurement_filename.
 
@@ -193,9 +193,11 @@ class BaseDelegate(object):
         audio = AudioIO()
         self.audio_devices = audio.getAudioDevices()
 
+
 if __name__ == "__main__":
     """ A simple example showing the use of the BaseDelegate """
     import pylab as py
+
     logger = logging.getLogger("Alpha")
     logger.setLevel(logging.DEBUG)
     ch = logging.StreamHandler()
@@ -205,8 +207,8 @@ if __name__ == "__main__":
     logger.info("Creating BaseDelegate Object")
     delegate = BaseDelegate()
     measurement_file = "/Users/lance/Programming/Python/Masters/test data/120215_asphalt.db"
-    #self.logger.info("Saving measurement")
-    #delegate.saveMeasurement(measurement, measurement_file)
+    # self.logger.info("Saving measurement")
+    # delegate.saveMeasurement(measurement, measurement_file)
     alpha = delegate.loadMeasurement(measurement_file)
     mic_signal = alpha.microphone_signals[0]
     t = py.arange(0, len(mic_signal) / 44100.0, 1 / 44100.0)
@@ -216,5 +218,3 @@ if __name__ == "__main__":
     py.subplot(212)
     py.plot(alpha.generator_response)
     py.show()
-
-
