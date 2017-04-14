@@ -75,12 +75,12 @@ class PreferenceController(QDialog, Ui_Preference):
         if "signal type" in self.settings:
             signal_type = self.settings["signal type"]
             signal_index = self.signalBox.findText(signal_type,
-                ~Qt.MatchCaseSensitive | Qt.MatchExactly)
+                                                   ~Qt.MatchCaseSensitive | Qt.MatchExactly)
 
             self.signalBox.setCurrentIndex(signal_index)
 
         self._setValue("signal reps", self.signalRepetitionsBox,
-            lambda x: int(x))
+                       lambda x: int(x))
 
         ### MLS Signal Settings
         self._setValue("mls taps", self.mlsTapsBox, lambda x: int(x))
@@ -88,11 +88,11 @@ class PreferenceController(QDialog, Ui_Preference):
 
         ### Swept Sine Settings
         self._setValue("lower frequency", self.lowerFrequencyBox,
-            lambda x: int(x))
+                       lambda x: int(x))
         self._setValue("upper frequency", self.upperFrequencyBox,
-            lambda x: int(x))
+                       lambda x: int(x))
         self._setValue("signal length", self.signalLengthBox,
-            lambda x: float(x) * 1000.0)
+                       lambda x: float(x) * 1000.0)
 
         ## Filter Settings
         self._setValue("hpf cutoff", self.highPassCutOffBox, lambda x: int(x))
@@ -107,8 +107,7 @@ class PreferenceController(QDialog, Ui_Preference):
         self._setValue("window start", self.windowStartBox, lambda x: float(x))
         self._setValue("window end", self.windowEndBox, lambda x: float(x))
         self._setValue("taper length", self.taperLengthBox, lambda x: float(x))
-        self._setValue("decimation factor", self.decimationBox,
-            lambda x: int(x))
+        self._setValue("decimation factor", self.decimationBox, lambda x: int(x))
 
     def _setChecked(self, key, widget):
         """ Set the check status of the widget.
@@ -242,8 +241,6 @@ class PreferenceController(QDialog, Ui_Preference):
         """
         self.logger.debug("Entering _synchronizeWidgets")
 
-
-
         # Synchronize measurementStacked
         index = self.measurementSettingsList.currentRow()
         self.measurementStacked.setCurrentIndex(index)
@@ -280,6 +277,5 @@ class PreferenceController(QDialog, Ui_Preference):
         # Synchronize Widgets
         self.gainSlider.valueChanged.connect(self._synchronizeWidgets)
         self.preferenceTab.currentChanged.connect(self._synchronizeWidgets)
-        self.measurementSettingsList.itemClicked.connect(
-            self._synchronizeWidgets)
+        self.measurementSettingsList.itemClicked.connect(self._synchronizeWidgets)
         self.signalBox.currentIndexChanged.connect(self._synchronizeWidgets)

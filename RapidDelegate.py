@@ -28,8 +28,7 @@ class RapidDelegate(BaseDelegate, QThread):
         self.logger = logging.getLogger("Alpha")
         self.logger.debug("Creating RapidDelegate")
 
-        self.window = RapidController(self.measurement_settings,
-                                    self.audio_devices)
+        self.window = RapidController(self.measurement_settings, self.audio_devices)
 
         self._setupSignals()
 

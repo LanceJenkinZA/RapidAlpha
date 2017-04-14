@@ -55,8 +55,6 @@ class RapidController(QMainWindow, Ui_RapidAlphaWindow):
         self.grapher = Grapher(self.measurement_settings)
         self.alpha = None
 
-
-
         self.setupUi(self)
         self._setupWidgets()
         self._setupSignals()
@@ -71,8 +69,10 @@ class RapidController(QMainWindow, Ui_RapidAlphaWindow):
 
         self.grapher.graphAbsorption(self.alpha.alpha, self.AlphaPlot)
         self.grapher.graphCepstrum(self.alpha.microphone_cepstrum,
-            self.alpha.generator_cepstrum, self.alpha.power_cepstrum, self.alpha.impulse_response,
-            self.alpha.window, float(self.alpha.measurement_settings["window start"]), self.CepstrumPlot)
+                                   self.alpha.generator_cepstrum, self.alpha.power_cepstrum,
+                                   self.alpha.impulse_response,
+                                   self.alpha.window, float(self.alpha.measurement_settings["window start"]),
+                                   self.CepstrumPlot)
 
     def _setupWidgets(self):
         """ Setup the widgets to show the user.
@@ -96,7 +96,7 @@ class RapidController(QMainWindow, Ui_RapidAlphaWindow):
         self.gainSpin.setSingleStep(0.01)
 
         self.toolBar.addSeparator()
-        self.toolBar.addWidget(QSpacerItem(0,0).widget())
+        self.toolBar.addWidget(QSpacerItem(0, 0).widget())
         self.toolBar.addWidget(QLabel("Gain: "))
         self.toolBar.addWidget(self.gainSlider)
         self.toolBar.addWidget(self.gainSpin)
@@ -105,11 +105,9 @@ class RapidController(QMainWindow, Ui_RapidAlphaWindow):
         self.updateWidgets()
 
     def updateWidgets(self):
-        """ Set the values for widgets on the screen.
+        """ Set the values for widgets on the screen. """
 
-        """
-
-        gain = 20 * log10(float(self.measurement_settings["gain"]) )
+        gain = 20 * log10(float(self.measurement_settings["gain"]))
         self.gainSlider.setValue(gain)
         self.gainSpin.setValue(gain)
 
@@ -140,7 +138,7 @@ class RapidController(QMainWindow, Ui_RapidAlphaWindow):
         self.actionSave_Preferences.triggered.connect(lambda: save_func("preferences"))
 
         load_func = self._showOpenDialog
-        self.actionSave_Preferences.triggered.connect(lambda: load_func("preferences"))
+        self.actionLoad_Preferences.triggered.connect(lambda: load_func("preferences"))
         self.actionLoad_Measurement.triggered.connect(lambda: load_func("measurement"))
         self.actionExit.triggered.connect(self.exit)
 
@@ -160,7 +158,7 @@ class RapidController(QMainWindow, Ui_RapidAlphaWindow):
         gain = float(self.measurement_settings["gain"])
         gain_db = 20 * log10(gain)
 
-        self.logger.debug("sender: %s" %(self.sender()))
+        self.logger.debug("sender: %s" % (self.sender()))
         if self.sender() == self.gainSlider:
             self.logger.debug("Slider: %s" % (self.gainSlider.value()))
             self.gainSpin.setValue((self.gainSlider.value() / 100.0))
@@ -184,11 +182,11 @@ class RapidController(QMainWindow, Ui_RapidAlphaWindow):
 
         if file_type == "measurement":
             caption = "Select Measurement File to Load"
-            filter = "AlphaDb (*.db)"
+            filter = "AlphaDb (*.adb)"
             signal = self.loadMeasurement
         elif file_type == "preferences":
             caption = "Select Preferences File to Load"
-            filter = "Preferences (*.db)"
+            filter = "Preferences (*.pdb)"
             signal = self.loadPreferences
         else:
             self.logger.debug("Invalid file_type passed: %s" % (file_type))
@@ -199,7 +197,6 @@ class RapidController(QMainWindow, Ui_RapidAlphaWindow):
         filename = QFileDialog.getOpenFileName(self, caption, dir, filter)
         # filename is a tuple (filename, selected filter) when file is selected
         # else a blank string if dialog closed
-        print filename
         if filename != "":
             signal.emit(filename)
 
@@ -229,12 +226,12 @@ class RapidController(QMainWindow, Ui_RapidAlphaWindow):
             filter = "CSV (*.csv)"
             signal = self.exportData
         elif file_type == "measurement":
-            caption = "Select file to save the measurement to"
-            filter = "AlphaDb (*.db)"
+            caption = "Enter file name of measurement"
+            filter = "AlphaDb (*.adb)"
             signal = self.saveMeasurement
         elif file_type == "preferences":
-            caption = "Select Filename to save Preferences"
-            filter = "Preferences (*.db)"
+            caption = "Enter file name of preferences"
+            filter = "Preferences (*.pdb)"
             signal = self.savePreferences
         else:
             self.logger.debug("Invalid file_type passed: %s" % (file_type))
