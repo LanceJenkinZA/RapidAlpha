@@ -7,6 +7,8 @@ the default settings to do the measurement, as well as to analyze the response.
 
 import logging
 from multiprocessing import Pool
+import pickle
+import os
 
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
@@ -20,6 +22,7 @@ __email__ = "lancejenkin@gmail.com"
 
 
 class RapidDelegate(BaseDelegate, QThread):
+    LAST_PREFERENCES_FILENAME = os.path.join(os.path.dirname(__file__), "last_preferences.pdb")
 
     def __init__(self):
         """ Constructor for RapidDelegate """
@@ -27,10 +30,31 @@ class RapidDelegate(BaseDelegate, QThread):
         QThread.__init__(self)
         self.logger = logging.getLogger("Alpha")
         self.logger.debug("Creating RapidDelegate")
-
+        self.load_previous_preferences()
         self.window = RapidController(self.measurement_settings, self.audio_devices)
 
         self._setupSignals()
+
+    def __del__(self):
+        """ Deconstructor """
+        self.save_current_preferences()
+
+    def save_current_preferences(self):
+        try:
+            with open(str(self.LAST_PREFERENCES_FILENAME), "wb") as file:
+                pickle.dump(self.measurement_settings, file)
+        except Exception as e:
+            self.logger.exception(e)
+            pass
+
+    def load_previous_preferences(self):
+        try:
+            with open(str(self.LAST_PREFERENCES_FILENAME), "rb") as file:
+                settings = pickle.load(file)
+                self.measurement_settings = settings
+        except Exception as e:
+            self.logger.exception(e)
+            pass
 
     def _setupSignals(self):
         """ Connect the required signals to the correct slots. """
@@ -42,14 +66,15 @@ class RapidDelegate(BaseDelegate, QThread):
 
         self.window.showPreferences.connect(self._showPreferences)
 
+        self.window.savePreferences.connect(self.save_preferences)
+        self.window.loadPreferences.connect(self.load_preferences)
+
     def _showPreferences(self):
         """ Show the preference dialog """
         self.logger.debug("Entering _showPreferences")
 
-        if self.window.alpha is  None:
-            self.preferences = PreferenceDelegate(self.measurement_settings)
-        else:
-            self.preferences = PreferenceDelegate(self.window.alpha.measurement_settings)
+        self.preferences = PreferenceDelegate(self.measurement_settings)
+
         self.preferences.finished.connect(self._setSettings)
 
     def _setSettings(self):
@@ -64,7 +89,6 @@ class RapidDelegate(BaseDelegate, QThread):
             self.window.alpha.measurement_settings = self.preferences.measurement_settings
             self.window.alpha.determineAlpha()
             self.window.update()
-
 
     def _newMeasurement(self):
         """ Helper method to start a new measurement.
@@ -119,9 +143,38 @@ class RapidDelegate(BaseDelegate, QThread):
         alpha = self.loadAbsorptionCoefficient(measurement_filename)
 
         self.window.alpha = alpha
+        self.measurement_settings = alpha.measurement_settings
         self.window.grapher.measurement_settings = alpha.measurement_settings
         self.window.setWindowTitle("Rapid Alpha - %s" % (measurement_filename))
         self.window.update()
+
+    def save_preferences(self, preferences_filename):
+        """ Save preferences to file. """
+        try:
+            with open(str(preferences_filename), "wb") as file:
+                pickle.dump(self.measurement_settings, file)
+                self.window.statusBar().showMessage("Preferences settings", 5000)
+        except Exception as e:
+            QMessageBox.critical(
+                self,
+                "Unable to save measurement settings",
+                "An error occurred saving measurement preferences: {}".format(e.message)
+            )
+
+    def load_preferences(self, preferences_filename):
+        """ Load preferences from file"""
+        try:
+            with open(str(preferences_filename), "rb") as file:
+                settings = pickle.load(file)
+                self.measurement_settings = settings
+                self.window.statusBar().showMessage("Preferences loaded", 5000)
+        except Exception as e:
+            QMessageBox.critical(
+                self,
+                "Unable to load measurement settings",
+                "An error occurred loading measurement preferences: {}".format(e.message)
+            )
+
 
 if __name__ == "__main__":
     logger = logging.getLogger("Alpha")
